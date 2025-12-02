@@ -10,6 +10,11 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// root fix
+app.get("/", (req, res) => {
+  res.send("Backend running for Chrono Capsule!");
+});
+
 // Routes
 app.use("/api/auth", authRoutes);
 
@@ -20,9 +25,10 @@ mongoose
     console.log("MongoDB connecteeeeeeed!!!");
     // Start server only after DB connects
     app.listen(process.env.PORT, () => {
-      console.log(`Server running on port!!!! ${process.env.PORT}`);
+      console.log(`Server running on port ${process.env.PORT} !!!!!`);
     });
   })
   .catch((err) => {
     console.log("xxxx MongoDB connection errooooor xxx:", err.message);
   });
+

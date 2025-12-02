@@ -1,44 +1,81 @@
-// src/pages/Dashboard.jsx
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import '../styles/dashboard.css'; // Make sure this path matches your project
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
-  // Fetch user data when the component is mounted
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user"));
-    if (!userData) {
-      navigate("/login"); // If no user is found in localStorage, redirect to login
-    } else {
-      setUser(userData); // Set user data if available
+    const stored = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
+
+    if (!stored || !token) {
+      navigate("/login");
+      return;
     }
+
+    setUser(JSON.parse(stored));
   }, [navigate]);
 
   const handleLogout = () => {
-    // Clear localStorage and navigate to login
-    localStorage.removeItem("token");
     localStorage.removeItem("user");
-
-    // Navigate to login after logout
+    localStorage.removeItem("token");
     navigate("/login");
   };
 
-  return (
-    <div className="dashboard-container">
-      <h1>Welcome, {user ? user.name : "Loading..."}</h1>
+  if (!user) return <p className="loading-text">Loading...</p>;
 
-      {user ? (
-        <div>
-          <p><strong>Email:</strong> {user.email}</p>
-          <button onClick={handleLogout} className="btn">
-            Logout
-          </button>
+  return (
+  <div className="dashboard-container">
+
+    {/* NAVBAR */}
+    <nav className="navbar">
+      <h1 className="logo">Chrono Dashboard</h1>
+      <button className="logout-btn" onClick={handleLogout}>Logout</button>
+    </nav>
+
+    <div className="dashboard-layout">
+
+      {/* SIDEBAR */}
+      <aside className="sidebar">
+        <h3 className="sidebar-title">Menu</h3>
+        <button className="sidebar-btn">Edit Profile</button>
+        <button className="sidebar-btn">View Reports</button>
+        <button className="sidebar-btn">Settings</button>
+      </aside>
+
+      {/* MAIN CONTENT */}
+      <div className="dashboard-content">
+        
+        <h2 className="welcome-text">Welcome {user.name} 👋</h2>
+
+        <div className="profile-card">
+          <h3>Your Profile</h3>
+          <div className="profile-grid">
+            <p><strong>Email:</strong> {user.email}</p>
+            <p><strong>Country:</strong> {user.country}</p>
+            <p><strong>Phone:</strong> {user.phone}</p>
+            <p><strong>Joined:</strong> {new Date().toDateString()}</p>
+          </div>
         </div>
-      ) : (
-        <p>Loading...</p>
-      )}
+
+        <div className="stats-grid">
+          <div className="stat-card"><h4>Tasks Completed</h4><p>0</p></div>
+          <div className="stat-card"><h4>Pending Tasks</h4><p>0</p></div>
+          <div className="stat-card"><h4>Total Hours</h4><p>0 Hrs</p></div>
+          <div className="stat-card"><h4>Progress</h4><p>0%</p></div>
+        </div>
+
+      </div>
+
     </div>
-  );
+
+    <footer className="dashboard-footer">
+      © 2025 Chrono | All rights reserved.
+    </footer>
+
+  </div>
+);
+
 }
