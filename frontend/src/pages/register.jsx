@@ -1,6 +1,7 @@
+// src/pages/Register.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerUser } from "../api/api";
+import { registerUser } from "../api/api"; // Assuming you have an API function to handle registration
 
 export default function Register() {
   const navigate = useNavigate();
@@ -8,10 +9,8 @@ export default function Register() {
     name: "",
     email: "",
     password: "",
-    country: "",
-    phone: "",
+    confirmPassword: "",
   });
-
   const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
@@ -21,44 +20,90 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
+
+    if (formData.password !== formData.confirmPassword) {
+      setMessage("Passwords don't match.");
+      return;
+    }
+
     try {
-      const res = await registerUser(formData);
-      setMessage(res.message || "Registration successful!");
-      setFormData({ name: "", email: "", password: "", country: "", phone: "" });
+      const response = await registerUser(formData);
+      setMessage("Registration successful!");
+
+      // After registration, redirect to login page
       navigate("/login");
     } catch (err) {
-      setMessage(err.response?.data?.message || "Error occurred");
+      setMessage("Registration failed. Please try again.");
     }
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "50px auto" }}>
+    <div className="form-container">
       <h2>Register</h2>
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name:</label>
-          <input type="text" name="name" value={formData.name} onChange={handleChange} required />
+        <div className="input-group">
+          <label htmlFor="name">Full Name</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Enter your name"
+            required
+          />
         </div>
-        <div>
-          <label>Email:</label>
-          <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+
+        <div className="input-group">
+          <label htmlFor="email">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Enter your email"
+            required
+          />
         </div>
-        <div>
-          <label>Password:</label>
-          <input type="password" name="password" value={formData.password} onChange={handleChange} required />
+
+        <div className="input-group">
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            placeholder="Enter your password"
+            required
+          />
         </div>
-        <div>
-          <label>Country:</label>
-          <input type="text" name="country" value={formData.country} onChange={handleChange} required />
+
+        <div className="input-group">
+          <label htmlFor="confirmPassword">Confirm Password</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            placeholder="Confirm your password"
+            required
+          />
         </div>
-        <div>
-          <label>Phone:</label>
-          <input type="text" name="phone" value={formData.phone} onChange={handleChange} required />
-        </div>
+
         <button type="submit">Register</button>
       </form>
+
       {message && <p>{message}</p>}
+
+      <p>
+        Already have an account? <a href="/login">Login</a>
+      </p>
     </div>
   );
 }
+
+
 

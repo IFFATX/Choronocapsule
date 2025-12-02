@@ -1,45 +1,44 @@
 // src/pages/Dashboard.jsx
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
+  // Fetch user data when the component is mounted
   useEffect(() => {
-    // Get user info from localStorage
-    const storedUser = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
-
-    if (!storedUser || !token) {
-      // Not logged in, redirect to login
-      navigate("/login");
-      return;
+    const userData = JSON.parse(localStorage.getItem("user"));
+    if (!userData) {
+      navigate("/login"); // If no user is found in localStorage, redirect to login
+    } else {
+      setUser(userData); // Set user data if available
     }
-
-    setUser(JSON.parse(storedUser));
   }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem("user");
+    // Clear localStorage and navigate to login
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
+    // Navigate to login after logout
     navigate("/login");
   };
 
-  if (!user) return <p>Loading...</p>;
-
   return (
-    <div style={{ maxWidth: "600px", margin: "50px auto", textAlign: "center" }}>
-      <h1>Welcome, {user.name}!</h1>
-      <p><strong>Email:</strong> {user.email}</p>
-      <p><strong>Country:</strong> {user.country}</p>
-      <p><strong>Phone:</strong> {user.phone}</p>
-      <button onClick={handleLogout} style={{ marginTop: "20px", padding: "10px 20px" }}>
-        Logout
-      </button>
+    <div className="dashboard-container">
+      <h1>Welcome, {user ? user.name : "Loading..."}</h1>
+
+      {user ? (
+        <div>
+          <p><strong>Email:</strong> {user.email}</p>
+          <button onClick={handleLogout} className="btn">
+            Logout
+          </button>
+        </div>
+      ) : (
+        <p>Loading...</p>
+      )}
     </div>
   );
 }
-
-
-

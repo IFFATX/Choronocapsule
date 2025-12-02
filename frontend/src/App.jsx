@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Register from "./pages/register";
 import Login from "./pages/login";
 import Dashboard from "./pages/dashboard";
+import './App.css';
 
 function App() {
   // Simple auth check using localStorage
@@ -21,18 +22,17 @@ function App() {
           path="/register"
           element={isAuthenticated ? <Navigate to="/dashboard" /> : <Register />}
         />
-
         <Route
           path="/login"
           element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />}
         />
-
+        
         {/* Protect dashboard route */}
         <Route
           path="/dashboard"
           element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
         />
-
+        
         {/* Catch all unmatched routes */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
@@ -41,6 +41,11 @@ function App() {
 }
 
 export default App;
+
+
+
+
+
 
 
 
