@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Backend base URL
-const BASE_URL = "http://localhost:5001/api/auth";
+const BASE_URL = "http://localhost:5000/api/auth";
 
 export const registerUser = async (userData) => {
   try {

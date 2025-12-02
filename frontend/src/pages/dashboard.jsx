@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios"; 
 import '../styles/dashboard.css';
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
-  const [activePage, setActivePage] = useState("profile"); 
-  // profile | reports | settings
+  const [capsules, setCapsules] = useState([]);
+
+  const [activePage, setActivePage] = useState("profile");
 
   useEffect(() => {
     const stored = localStorage.getItem("user");
@@ -19,6 +21,20 @@ export default function Dashboard() {
     }
 
     setUser(JSON.parse(stored));
+
+    const fetchCapsules = async () => {
+      try {
+        const config = {
+            headers: { Authorization: `Bearer ${token}` }
+        };
+        const res = await axios.get("http://localhost:5000/api/capsules", config);
+        setCapsules(res.data);
+      } catch (err) {
+        console.error("Error fetching capsules:", err);
+      }
+    };
+    fetchCapsules();
+
   }, [navigate]);
 
   const handleLogout = () => {
@@ -43,9 +59,17 @@ export default function Dashboard() {
         {/* SIDEBAR */}
         <aside className="sidebar">
           <h3 className="sidebar-title">Menu</h3>
+          
           <button className="sidebar-btn" onClick={() => setActivePage("profile")}>
             Edit Profile
           </button>
+
+          {/* --- NEW SIDEBAR BUTTON --- */}
+          <button className="sidebar-btn" onClick={() => setActivePage("capsules")}>
+            My Capsules
+          </button>
+          {/* -------------------------- */}
+
           <button className="sidebar-btn" onClick={() => setActivePage("reports")}>
             View Reports
           </button>
@@ -66,14 +90,57 @@ export default function Dashboard() {
                 <h3>Your Profile</h3>
                 <div className="profile-grid">
                   <p><strong>Email:</strong> {user.email}</p>
-                  {/* Removed country and phone as requested */}
                   <p><strong>Joined:</strong> {new Date().toDateString()}</p>
                 </div>
               </div>
             </>
           )}
 
-          {/* REPORTS PAGE */}
+          {activePage === "capsules" && (
+            <>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                <h2 className="welcome-text">Your Time Capsules</h2>
+                <Link to="/create">
+                    <button className="create-btn">+ Seal New Capsule</button>
+                </Link>
+              </div>
+
+              <div className="capsule-grid">
+                {capsules.length > 0 ? (
+                  capsules.map((capsule) => (
+                    <div key={capsule._id} className="capsule-card">
+                      <div className="card-header">
+                        <span className={`status-badge ${capsule.status}`}>
+                          {capsule.status.toUpperCase()}
+                        </span>
+                        <span className="date-text">
+                           {new Date(capsule.releaseDate).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <h3>{capsule.title}</h3>
+                      <p className="card-desc">
+                        {capsule.description.substring(0, 60)}...
+                      </p>
+                      
+                      {capsule.status === 'draft' && (
+                          <Link to={`/edit/${capsule._id}`}>
+                            <button className="action-btn">Edit Draft</button>
+                          </Link>
+                      )}
+                      {capsule.status === 'locked' && (
+                          <div className="lock-message">🔒 Locked</div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="empty-state">
+                    <p>You haven't created any capsules yet.</p>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
           {activePage === "reports" && (
             <>
               <h2 className="welcome-text">Your Reports 📊</h2>
@@ -81,7 +148,7 @@ export default function Dashboard() {
               <div className="stats-grid">
                 <div className="stat-card">
                   <h4>Tasks Completed</h4>
-                  <p>0</p>
+                  <p>{capsules.length}</p>
                 </div>
 
                 <div className="stat-card">
@@ -102,7 +169,6 @@ export default function Dashboard() {
             </>
           )}
 
-          {/* SETTINGS PAGE (placeholder) */}
           {activePage === "settings" && (
             <>
               <h2 className="welcome-text">Settings ⚙️</h2>

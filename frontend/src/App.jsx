@@ -3,10 +3,12 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Register from "./pages/register";
 import Login from "./pages/login";
 import Dashboard from "./pages/dashboard";
+import CreateCapsule from "./pages/CreateCapsule"; // <--- 1. Import the new page
 import './App.css';
 
 function App() {
   // Simple auth check using localStorage
+  // Note: Ensure your Login page saves the item as "token" (lowercase) to match this check
   const isAuthenticated = !!localStorage.getItem("token");
 
   return (
@@ -24,7 +26,7 @@ function App() {
         />
         <Route
           path="/login"
-          element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />}
+          element={isAuthenticated ? <Navigate to="/login" /> : <Login />}
         />
         
         {/* Protect dashboard route */}
@@ -32,6 +34,14 @@ function App() {
           path="/dashboard"
           element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
         />
+
+        {/* --- ADDED THIS SECTION --- */}
+        {/* Protect Create Capsule route */}
+        <Route
+          path="/create"
+          element={isAuthenticated ? <CreateCapsule /> : <Navigate to="/login" />}
+        />
+        {/* -------------------------- */}
         
         {/* Catch all unmatched routes */}
         <Route path="*" element={<Navigate to="/" />} />
@@ -41,13 +51,3 @@ function App() {
 }
 
 export default App;
-
-
-
-
-
-
-
-
-
-
