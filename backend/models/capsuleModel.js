@@ -19,6 +19,11 @@ const capsuleSchema = mongoose.Schema(
       enum: ['draft', 'locked', 'released'],
       default: 'draft',
     },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'Please provide owner'],
+    },
   },
   {
     timestamps: true,

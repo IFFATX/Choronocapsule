@@ -10,13 +10,12 @@ const createCapsule = asyncHandler(async (req, res) => {
     throw new Error('Please fill in all fields');
   }
 
-
   const capsule = await Capsule.create({
     title,
     description,
     releaseDate,
     status: 'draft',
-    // owner: req.user.id, {uncomment after  Auth Middleware implement}
+    owner: req.user.id,
   });
 
   res.status(201).json(capsule);
@@ -24,14 +23,23 @@ const createCapsule = asyncHandler(async (req, res) => {
 
 
 const getCapsules = asyncHandler(async (req, res) => {
-
-  // const capsules = await Capsule.find(); 
-  
-
-  // const capsules = await Capsule.find({ owner: req.user.id });
-  
-  const capsules = await Capsule.find();
+  const capsules = await Capsule.find({ owner: req.user.id });
   res.status(200).json(capsules);
 });
 
-export { createCapsule, getCapsules };
+const deleteCapsule = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const capsule = await Capsule.findOne({ _id: id, owner: req.user.id });
+
+  if (!capsule) {
+    res.status(404);
+    throw new Error('Capsule not found or unauthorized');
+  }
+
+  await Capsule.findByIdAndDelete(id);
+
+  res.status(200).json({ message: 'Capsule deleted successfully', capsule });
+});
+
+export { createCapsule, getCapsules, deleteCapsule };

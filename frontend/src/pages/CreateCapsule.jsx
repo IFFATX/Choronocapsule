@@ -18,8 +18,16 @@ const CreateCapsule = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("You must be logged in to create a capsule");
+        return;
+      }
+
       // NOTE: Ensure this matches your backend URL/Port
-      const res = await axios.post("http://localhost:5000/api/capsules", formData);
+      const res = await axios.post("http://localhost:5001/api/capsules", formData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       
       console.log("Response:", res.data);
       alert("Capsule Created Successfully!");
