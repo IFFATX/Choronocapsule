@@ -4,6 +4,7 @@ import Register from "./pages/register";
 import Login from "./pages/login";
 import Dashboard from "./pages/dashboard";
 import CreateCapsule from "./pages/CreateCapsule";
+import EditCapsule from "./pages/EditCapsule";
 import './App.css';
 
 
@@ -66,6 +67,15 @@ function App() {
           }
         />
         
+        <Route
+          path="/edit/:id"
+          element={
+            <ProtectedRoute>
+              <EditCapsule />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

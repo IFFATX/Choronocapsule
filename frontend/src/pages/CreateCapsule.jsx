@@ -8,11 +8,16 @@ const CreateCapsule = () => {
     description: "",
     releaseDate: "",
   });
+  const [files, setFiles] = useState([]);
 
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleFileChange = (e) => {
+    setFiles(e.target.files);
   };
 
   const handleSubmit = async (e) => {
@@ -24,9 +29,20 @@ const CreateCapsule = () => {
         return;
       }
 
+      const formDataToSend = new FormData();
+      formDataToSend.append("title", formData.title);
+      formDataToSend.append("description", formData.description);
+      formDataToSend.append("releaseDate", formData.releaseDate);
+      
+      for (let i = 0; i < files.length; i++) {
+        formDataToSend.append("files", files[i]);
+      }
+
       // NOTE: Ensure this matches your backend URL/Port
-      const res = await axios.post("http://localhost:5001/api/capsules", formData, {
-        headers: { Authorization: `Bearer ${token}` }
+      const res = await axios.post("http://localhost:5000/api/capsules", formDataToSend, {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+        }
       });
       
       console.log("Response:", res.data);
@@ -74,6 +90,16 @@ const CreateCapsule = () => {
             onChange={handleChange}
             style={{ width: "100%", padding: "8px" }}
             required
+          />
+        </div>
+
+        <div style={{ marginBottom: "15px" }}>
+          <label>Attach Files (Images/Videos/Audio/PDFs)</label>
+          <input
+            type="file"
+            multiple
+            onChange={handleFileChange}
+            style={{ width: "100%", padding: "8px" }}
           />
         </div>
 

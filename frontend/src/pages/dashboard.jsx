@@ -45,7 +45,7 @@ export default function Dashboard() {
         const config = {
             headers: { Authorization: `Bearer ${token}` }
         };
-        const res = await axios.get("http://localhost:5001/api/capsules", config);
+        const res = await axios.get("http://localhost:5000/api/capsules", config);
         setCapsules(res.data);
       } catch (err) {
         console.error("Error fetching capsules:", err);
@@ -95,7 +95,7 @@ export default function Dashboard() {
     if (window.confirm("Are you sure you want to delete this draft? This action cannot be undone.")) {
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`http://localhost:5001/api/capsules/${capsuleId}`, {
+        await axios.delete(`http://localhost:5000/api/capsules/${capsuleId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         

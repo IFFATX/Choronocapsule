@@ -19,6 +19,10 @@ const capsuleSchema = mongoose.Schema(
       enum: ['draft', 'locked', 'released'],
       default: 'draft',
     },
+    files: {
+      type: [String],
+      default: [],
+    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
