@@ -1,3 +1,5 @@
+/* src/App.css */
+
 /* Global Reset */
 *,
 *::before,
@@ -143,4 +145,17 @@ a:hover {
 
 .read-the-docs {
   color: #888;
+}
+
+
+input, textarea, select {
+  color: #000000 !important; 
+  background-color: #ffffff; 
+  border: 1px solid #ccc;
+}
+
+
+input:focus, textarea:focus, select:focus {
+  color: #000000 !important;
+  outline: 2px solid #007bff;
 }
