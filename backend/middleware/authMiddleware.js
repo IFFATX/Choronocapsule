@@ -12,3 +12,6 @@ export const verifyToken = (req, res, next) => {
     res.status(401).json({ message: "Token is not valid" });
   }
 };
+
+// Export as 'protect' for consistency with notification routes
+export const protect = verifyToken;

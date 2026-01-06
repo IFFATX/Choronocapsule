@@ -7,6 +7,8 @@ import '../styles/dashboard.css';
 import '../styles/countdown.css';
 import CountdownTimer from "../components/CountdownTimer";
 import Logo from "../components/Logo";
+import NotificationBell from "../components/NotificationBell";
+import BadgeDisplay from "../components/BadgeDisplay";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -45,7 +47,7 @@ export default function Dashboard() {
         const config = {
             headers: { Authorization: `Bearer ${token}` }
         };
-        const res = await axios.get("http://localhost:5000/api/capsules", config);
+        const res = await axios.get("http://localhost:5001/api/capsules", config);
         setCapsules(res.data);
       } catch (err) {
         console.error("Error fetching capsules:", err);
@@ -95,7 +97,7 @@ export default function Dashboard() {
     if (window.confirm("Are you sure you want to delete this draft? This action cannot be undone.")) {
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`http://localhost:5000/api/capsules/${capsuleId}`, {
+        await axios.delete(`http://localhost:5001/api/capsules/${capsuleId}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         
@@ -136,6 +138,7 @@ export default function Dashboard() {
           <h1 className="logo">ChronoCapsule</h1>
         </div>
         <div className="navbar-actions">
+          <NotificationBell />
           <button className="dark-mode-btn" onClick={toggleDarkMode} title="Toggle dark mode">
             {darkMode ? "☀️" : "🌙"}
           </button>
@@ -159,6 +162,10 @@ export default function Dashboard() {
           </button>
           {/* -------------------------- */}
 
+          <button className="sidebar-btn" onClick={() => setActivePage("badges")}>
+            Achievements
+          </button>
+
           <button className="sidebar-btn" onClick={() => setActivePage("reports")}>
             View Reports
           </button>
@@ -176,94 +183,260 @@ export default function Dashboard() {
               <h2 className="welcome-text">Welcome {user.name} 👋</h2>
 
               <div className="profile-card">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '25px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '30px' }}>
                   <div style={{
-                    width: '80px',
-                    height: '80px',
+                    width: '90px',
+                    height: '90px',
                     borderRadius: '50%',
-                    background: 'linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%)',
+                    background: 'linear-gradient(135deg, #51cf66 0%, #2ecc71 100%)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '40px',
-                    color: '#fff'
+                    fontSize: '48px',
+                    color: '#fff',
+                    fontWeight: '900',
+                    border: '5px solid #4ecdc4',
+                    boxShadow: '4px 4px 0 rgba(0,0,0,0.15)'
                   }}>
                     {user.name.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <h3 style={{ margin: '0 0 5px 0' }}>{user.name}</h3>
-                    <p style={{ margin: '0', color: '#666', fontSize: '14px' }}>User Profile</p>
+                    <h3 style={{ 
+                      margin: '0 0 8px 0', 
+                      fontSize: '28px', 
+                      fontWeight: '700',
+                      color: '#4ecdc4',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px'
+                    }}>{user.name}</h3>
+                    <p style={{ 
+                      margin: '0', 
+                      color: '#ff8e53', 
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px'
+                    }}>User Profile</p>
                   </div>
                 </div>
 
-                <div style={{ borderTop: '1px solid #ddd', paddingTop: '20px' }}>
-                  <h4 style={{ marginBottom: '15px', color: '#333' }}>Account Information</h4>
+                <div style={{ borderTop: '4px solid #ffd93d', paddingTop: '25px' }}>
+                  <h4 style={{ 
+                    marginBottom: '20px', 
+                    color: '#ff6b6b',
+                    fontSize: '22px',
+                    fontWeight: '700',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    textAlign: 'center'
+                  }}>Account Information</h4>
                   
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-                    <div style={{ padding: '15px', backgroundColor: '#f8f8f8', borderRadius: '8px' }}>
-                      <p style={{ margin: '0 0 5px 0', fontSize: '12px', color: '#999', textTransform: 'uppercase', fontWeight: 'bold' }}>Email Address</p>
-                      <p style={{ margin: '0', fontSize: '16px', fontWeight: '500' }}>{user.email}</p>
+                    <div style={{ 
+                      padding: '18px', 
+                      background: 'linear-gradient(135deg, #ffd93d 0%, #ffc107 100%)', 
+                      borderRadius: '18px',
+                      border: '3px solid #ff8e53',
+                      boxShadow: '3px 3px 0 rgba(0,0,0,0.1)'
+                    }}>
+                      <p style={{ 
+                        margin: '0 0 8px 0', 
+                        fontSize: '13px', 
+                        color: 'white', 
+                        textTransform: 'uppercase', 
+                        fontWeight: '700',
+                        letterSpacing: '1px'
+                      }}>Email Address</p>
+                      <p style={{ 
+                        margin: '0', 
+                        fontSize: '16px', 
+                        fontWeight: '600',
+                        color: 'white'
+                      }}>{user.email}</p>
                     </div>
                     
-                    <div style={{ padding: '15px', backgroundColor: '#f8f8f8', borderRadius: '8px' }}>
-                      <p style={{ margin: '0 0 5px 0', fontSize: '12px', color: '#999', textTransform: 'uppercase', fontWeight: 'bold' }}>Member Since</p>
-                      <p style={{ margin: '0', fontSize: '16px', fontWeight: '500' }}>{new Date().toLocaleDateString()}</p>
+                    <div style={{ 
+                      padding: '18px', 
+                      background: 'linear-gradient(135deg, #4ecdc4 0%, #44b8ac 100%)', 
+                      borderRadius: '18px',
+                      border: '3px solid #ffd93d',
+                      boxShadow: '3px 3px 0 rgba(0,0,0,0.1)'
+                    }}>
+                      <p style={{ 
+                        margin: '0 0 8px 0', 
+                        fontSize: '13px', 
+                        color: 'white', 
+                        textTransform: 'uppercase', 
+                        fontWeight: '700',
+                        letterSpacing: '1px'
+                      }}>Member Since</p>
+                      <p style={{ 
+                        margin: '0', 
+                        fontSize: '16px', 
+                        fontWeight: '600',
+                        color: 'white'
+                      }}>{new Date().toLocaleDateString()}</p>
                     </div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                    <div style={{ padding: '15px', backgroundColor: '#f8f8f8', borderRadius: '8px' }}>
-                      <p style={{ margin: '0 0 5px 0', fontSize: '12px', color: '#999', textTransform: 'uppercase', fontWeight: 'bold' }}>Total Capsules</p>
-                      <p style={{ margin: '0', fontSize: '16px', fontWeight: '500' }}>{capsules.length}</p>
+                    <div style={{ 
+                      padding: '18px', 
+                      background: 'linear-gradient(135deg, #ff8e53 0%, #ff6b6b 100%)', 
+                      borderRadius: '18px',
+                      border: '3px solid #4ecdc4',
+                      boxShadow: '3px 3px 0 rgba(0,0,0,0.1)'
+                    }}>
+                      <p style={{ 
+                        margin: '0 0 8px 0', 
+                        fontSize: '13px', 
+                        color: 'white', 
+                        textTransform: 'uppercase', 
+                        fontWeight: '700',
+                        letterSpacing: '1px'
+                      }}>Total Capsules</p>
+                      <p style={{ 
+                        margin: '0', 
+                        fontSize: '16px', 
+                        fontWeight: '600',
+                        color: 'white'
+                      }}>{capsules.length}</p>
                     </div>
                     
-                    <div style={{ padding: '15px', backgroundColor: '#f8f8f8', borderRadius: '8px' }}>
-                      <p style={{ margin: '0 0 5px 0', fontSize: '12px', color: '#999', textTransform: 'uppercase', fontWeight: 'bold' }}>Account Status</p>
-                      <p style={{ margin: '0', fontSize: '16px', fontWeight: '500', color: '#4CAF50' }}>✓ Active</p>
+                    <div style={{ 
+                      padding: '18px', 
+                      background: 'linear-gradient(135deg, #51cf66 0%, #2ecc71 100%)', 
+                      borderRadius: '18px',
+                      border: '3px solid #ff6b6b',
+                      boxShadow: '3px 3px 0 rgba(0,0,0,0.1)'
+                    }}>
+                      <p style={{ 
+                        margin: '0 0 8px 0', 
+                        fontSize: '13px', 
+                        color: 'white', 
+                        textTransform: 'uppercase', 
+                        fontWeight: '700',
+                        letterSpacing: '1px'
+                      }}>Account Status</p>
+                      <p style={{ 
+                        margin: '0', 
+                        fontSize: '16px', 
+                        fontWeight: '600', 
+                        color: 'white'
+                      }}>✓ Active</p>
                     </div>
                   </div>
                 </div>
 
-                <div style={{ borderTop: '1px solid #ddd', marginTop: '20px', paddingTop: '20px', textAlign: 'center' }}>
+                <div style={{ borderTop: '4px solid #4ecdc4', marginTop: '25px', paddingTop: '25px', textAlign: 'center' }}>
                   <Link to="/dashboard" style={{ textDecoration: 'none' }}>
                     <button onClick={() => setActivePage("settings")} style={{
-                      padding: '12px 30px',
-                      backgroundColor: '#4CAF50',
+                      padding: '15px 40px',
+                      background: 'linear-gradient(135deg, #51cf66 0%, #2ecc71 100%)',
                       color: 'white',
-                      border: 'none',
-                      borderRadius: '8px',
+                      border: '3px solid #4ecdc4',
+                      borderRadius: '18px',
                       cursor: 'pointer',
-                      fontSize: '14px',
-                      fontWeight: 'bold',
-                      transition: 'all 0.3s ease'
-                    }} onMouseOver={(e) => e.target.style.backgroundColor = '#2E7D32'} onMouseOut={(e) => e.target.style.backgroundColor = '#4CAF50'}>
+                      fontSize: '16px',
+                      fontWeight: '900',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px',
+                      transition: 'all 0.3s ease',
+                      boxShadow: '4px 4px 0 rgba(0,0,0,0.1)'
+                    }} onMouseOver={(e) => {
+                      e.target.style.background = 'linear-gradient(135deg, #ffd93d 0%, #ffc107 100%)';
+                      e.target.style.borderColor = '#ff8e53';
+                      e.target.style.transform = 'translateY(-2px)';
+                      e.target.style.boxShadow = '5px 5px 0 rgba(0,0,0,0.15)';
+                    }} onMouseOut={(e) => {
+                      e.target.style.background = 'linear-gradient(135deg, #51cf66 0%, #2ecc71 100%)';
+                      e.target.style.borderColor = '#4ecdc4';
+                      e.target.style.transform = 'translateY(0)';
+                      e.target.style.boxShadow = '4px 4px 0 rgba(0,0,0,0.1)';
+                    }}>
                       Edit Profile →
                     </button>
                   </Link>
                 </div>
               </div>
 
-              <div style={{ marginTop: '40px', background: 'linear-gradient(135deg, #ffc0cb 0%, #ffb6d9 100%)', padding: '30px', borderRadius: '12px', color: '#333', boxShadow: '0 8px 16px rgba(0,0,0,0.1)' }}>
-                <h3 style={{ margin: '0 0 15px 0', fontSize: '24px', fontWeight: 'bold', color: '#333' }}>✨ About ChronoCapsule</h3>
-                <p style={{ margin: '0 0 15px 0', fontSize: '16px', lineHeight: '1.6', opacity: '1', color: '#333' }}>
+              <div style={{ 
+                marginTop: '40px', 
+                background: 'linear-gradient(135deg, #fff 0%, #fffbf0 100%)', 
+                padding: '35px', 
+                borderRadius: '25px', 
+                color: '#333', 
+                boxShadow: '0 6px 0 rgba(0,0,0,0.1), 0 12px 30px rgba(0,0,0,0.15)',
+                border: '5px solid #ff6b6b'
+              }}>
+                <h3 style={{ 
+                  margin: '0 0 20px 0', 
+                  fontSize: '32px', 
+                  fontWeight: '900', 
+                  color: '#ff6b6b',
+                  textTransform: 'uppercase',
+                  letterSpacing: '2px',
+                  textShadow: '3px 3px 0 rgba(0,0,0,0.1)',
+                  textAlign: 'center'
+                }}>✨ About ChronoCapsule</h3>
+                <p style={{ 
+                  margin: '0 0 25px 0', 
+                  fontSize: '18px', 
+                  lineHeight: '1.8', 
+                  color: '#555',
+                  fontWeight: '600',
+                  textAlign: 'center'
+                }}>
                   ChronoCapsule is your personal time-locked vault for preserving memories and goals.
                 </p>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '15px' }}>
-                  <div style={{ backgroundColor: 'rgba(255,255,255,0.6)', padding: '15px', borderRadius: '8px', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.5)' }}>
-                    <p style={{ margin: '0 0 5px 0', fontSize: '14px', fontWeight: 'bold', opacity: '1', color: '#333' }}>🔐 Lock Memories</p>
-                    <p style={{ margin: '0', fontSize: '13px', opacity: '1', color: '#333' }}>Seal your cherished moments and unlock them at a future date</p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginTop: '20px' }}>
+                  <div style={{ 
+                    background: 'linear-gradient(135deg, #ffd93d 0%, #ffc107 100%)', 
+                    padding: '20px', 
+                    borderRadius: '20px', 
+                    border: '4px solid #ff8e53',
+                    boxShadow: '4px 4px 0 rgba(0,0,0,0.1)',
+                    transform: 'rotate(-1deg)',
+                    transition: 'all 0.3s ease'
+                  }}>
+                    <p style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: '900', color: '#fff', textTransform: 'uppercase', letterSpacing: '1px' }}>🔐 Lock Memories</p>
+                    <p style={{ margin: '0', fontSize: '15px', color: '#fff', fontWeight: '600', lineHeight: '1.5' }}>Seal your cherished moments and unlock them at a future date</p>
                   </div>
-                  <div style={{ backgroundColor: 'rgba(255,255,255,0.6)', padding: '15px', borderRadius: '8px', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.5)' }}>
-                    <p style={{ margin: '0 0 5px 0', fontSize: '14px', fontWeight: 'bold', opacity: '1', color: '#333' }}>🎯 New Year Resolutions</p>
-                    <p style={{ margin: '0', fontSize: '13px', opacity: '1', color: '#333' }}>Set goals and remind yourself of your aspirations when they unlock</p>
+                  <div style={{ 
+                    background: 'linear-gradient(135deg, #4ecdc4 0%, #44b8ac 100%)', 
+                    padding: '20px', 
+                    borderRadius: '20px', 
+                    border: '4px solid #ffd93d',
+                    boxShadow: '4px 4px 0 rgba(0,0,0,0.1)',
+                    transform: 'rotate(1deg)',
+                    transition: 'all 0.3s ease'
+                  }}>
+                    <p style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: '900', color: '#fff', textTransform: 'uppercase', letterSpacing: '1px' }}>🎯 New Year Resolutions</p>
+                    <p style={{ margin: '0', fontSize: '15px', color: '#fff', fontWeight: '600', lineHeight: '1.5' }}>Set goals and remind yourself of your aspirations when they unlock</p>
                   </div>
-                  <div style={{ backgroundColor: 'rgba(255,255,255,0.6)', padding: '15px', borderRadius: '8px', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.5)' }}>
-                    <p style={{ margin: '0 0 5px 0', fontSize: '14px', fontWeight: 'bold', opacity: '1', color: '#333' }}>📝 Motivational Notes</p>
-                    <p style={{ margin: '0', fontSize: '13px', opacity: '1', color: '#333' }}>Write future reminders to inspire and encourage yourself</p>
+                  <div style={{ 
+                    background: 'linear-gradient(135deg, #ff8e53 0%, #ff6b6b 100%)', 
+                    padding: '20px', 
+                    borderRadius: '20px', 
+                    border: '4px solid #4ecdc4',
+                    boxShadow: '4px 4px 0 rgba(0,0,0,0.1)',
+                    transform: 'rotate(1deg)',
+                    transition: 'all 0.3s ease'
+                  }}>
+                    <p style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: '900', color: '#fff', textTransform: 'uppercase', letterSpacing: '1px' }}>📝 Motivational Notes</p>
+                    <p style={{ margin: '0', fontSize: '15px', color: '#fff', fontWeight: '600', lineHeight: '1.5' }}>Write future reminders to inspire and encourage yourself</p>
                   </div>
-                  <div style={{ backgroundColor: 'rgba(255,255,255,0.6)', padding: '15px', borderRadius: '8px', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.5)' }}>
-                    <p style={{ margin: '0 0 5px 0', fontSize: '14px', fontWeight: 'bold', opacity: '1', color: '#333' }}>⏰ Time-Locked</p>
-                    <p style={{ margin: '0', fontSize: '13px', opacity: '1', color: '#333' }}>Capsules stay sealed until your chosen unlock date arrives</p>
+                  <div style={{ 
+                    background: 'linear-gradient(135deg, #9f7aea 0%, #805ad5 100%)', 
+                    padding: '20px', 
+                    borderRadius: '20px', 
+                    border: '4px solid #ff6b6b',
+                    boxShadow: '4px 4px 0 rgba(0,0,0,0.1)',
+                    transform: 'rotate(-1deg)',
+                    transition: 'all 0.3s ease'
+                  }}>
+                    <p style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: '900', color: '#fff', textTransform: 'uppercase', letterSpacing: '1px' }}>⏰ Time-Locked</p>
+                    <p style={{ margin: '0', fontSize: '15px', color: '#fff', fontWeight: '600', lineHeight: '1.5' }}>Capsules stay sealed until your chosen unlock date arrives</p>
                   </div>
                 </div>
               </div>
@@ -283,22 +456,28 @@ export default function Dashboard() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     style={{
                       width: "100%",
-                      padding: "12px 15px",
-                      borderRadius: "8px",
-                      border: "2px solid #ddd",
-                      fontSize: "14px",
+                      padding: "16px 20px",
+                      borderRadius: "18px",
+                      border: "3px solid #4ecdc4",
+                      fontSize: "16px",
+                      fontWeight: "700",
                       transition: "all 0.3s",
                       outline: "none",
                       backgroundColor: "#fff",
-                      color: "#333"
+                      color: "#333",
+                      boxShadow: "3px 3px 0 rgba(0,0,0,0.1)"
                     }}
                     onFocus={(e) => {
-                      e.target.style.borderColor = "#ff4444";
-                      e.target.style.boxShadow = "0 0 0 3px rgba(255, 68, 68, 0.1)";
+                      e.target.style.borderColor = "#ffd93d";
+                      e.target.style.boxShadow = "4px 4px 0 rgba(0,0,0,0.15)";
+                      e.target.style.transform = "translateY(-2px)";
                     }}
                     onBlur={(e) => {
-                      e.target.style.borderColor = "#ddd";
-                      e.target.style.boxShadow = "none";
+                      e.target.style.borderColor = "#4ecdc4";
+                      e.target.style.boxShadow = "3px 3px 0 rgba(0,0,0,0.1)";
+                      e.target.style.borderColor = "#4ecdc4";
+                      e.target.style.boxShadow = "3px 3px 0 rgba(0,0,0,0.1)";
+                      e.target.style.transform = "translateY(0)";
                     }}
                   />
                 </div>
@@ -333,18 +512,31 @@ export default function Dashboard() {
                             <button 
                               onClick={() => handleDeleteDraft(capsule._id)}
                               style={{
-                                padding: '10px 15px',
-                                backgroundColor: '#f75656',
+                                padding: '14px 18px',
+                                background: 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)',
                                 color: 'white',
-                                border: 'none',
-                                borderRadius: '6px',
+                                border: '3px solid #ff8e53',
+                                borderRadius: '16px',
                                 cursor: 'pointer',
-                                fontSize: '14px',
-                                fontWeight: '600',
-                                transition: 'all 0.3s ease'
+                                fontSize: '16px',
+                                fontWeight: '900',
+                                textTransform: 'uppercase',
+                                letterSpacing: '1px',
+                                transition: 'all 0.3s ease',
+                                boxShadow: '3px 3px 0 rgba(0,0,0,0.1)'
                               }}
-                              onMouseOver={(e) => e.target.style.backgroundColor = '#ec4343'}
-                              onMouseOut={(e) => e.target.style.backgroundColor = '#f75656'}
+                              onMouseOver={(e) => {
+                                e.target.style.background = 'linear-gradient(135deg, #ffd93d 0%, #ffc107 100%)';
+                                e.target.style.borderColor = '#ffd93d';
+                                e.target.style.transform = 'translateY(-2px)';
+                                e.target.style.boxShadow = '4px 4px 0 rgba(0,0,0,0.15)';
+                              }}
+                              onMouseOut={(e) => {
+                                e.target.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%)';
+                                e.target.style.borderColor = '#ff8e53';
+                                e.target.style.transform = 'translateY(0)';
+                                e.target.style.boxShadow = '3px 3px 0 rgba(0,0,0,0.1)';
+                              }}
                             >
                               🗑️ Delete
                             </button>
@@ -394,6 +586,13 @@ export default function Dashboard() {
                   <p>{progressPercentage}%</p>
                 </div>
               </div>
+            </>
+          )}
+
+          {activePage === "badges" && (
+            <>
+              <h2 className="welcome-text">Your Achievements 🏆</h2>
+              <BadgeDisplay />
             </>
           )}
 

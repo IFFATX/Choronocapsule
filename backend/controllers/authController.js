@@ -22,7 +22,7 @@ export const registerUser = async (req, res) => {
     });
 
     // create JWT token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
     res.status(201).json({ message: "User registered", user: { id: user._id, name, email }, token });
   } catch (err) {
@@ -42,7 +42,7 @@ export const loginUser = async (req, res) => {
     if (!valid) return res.status(400).json({ message: "Invalid password" });
 
     // create JWT token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
     res.json({ message: "Login success", user: { id: user._id, name: user.name, email }, token });
   } catch (err) {

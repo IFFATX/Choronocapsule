@@ -6,10 +6,13 @@ import path from "path";
 import { fileURLToPath } from "url";
 import authRoutes from "./routes/authRoutes.js";
 import capsuleRoutes from './routes/capsuleRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+import badgeRoutes from './routes/badgeRoutes.js';
+import { startNotificationService } from './services/notificationService.js';
 
 dotenv.config();
 
-// Resolve __dirname for ES modules
+// 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -17,7 +20,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Serve static files from the "uploads" directory
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // root fix
@@ -28,12 +31,18 @@ app.get("/", (req, res) => {
 // Routes
 app.use("/api/auth", authRoutes);
 app.use('/api/capsules', capsuleRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/badges', badgeRoutes);
 
-// Connect to MongoDB (Atlas)
+
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB connecteeeeeeed!!!");
+    
+   
+    startNotificationService();
+    
     // Start server only after DB connects
     app.listen(process.env.PORT, () => {
       console.log(`Server running on port ${process.env.PORT} !!!!!`);

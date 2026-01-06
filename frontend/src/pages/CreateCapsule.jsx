@@ -39,14 +39,18 @@ const CreateCapsule = () => {
       }
 
       // NOTE: Ensure this matches your backend URL/Port
-      const res = await axios.post("http://localhost:5000/api/capsules", formDataToSend, {
+      const res = await axios.post("http://localhost:5001/api/capsules", formDataToSend, {
         headers: { 
           Authorization: `Bearer ${token}`,
         }
       });
       
       console.log("Response:", res.data);
-      alert("Capsule Created Successfully!");
+      
+      // Trigger notification refresh in case badges were earned
+      window.dispatchEvent(new Event('badgeEarned'));
+      
+      alert("Capsule Created Successfully! Check if you earned any badges!");
       navigate("/dashboard"); // Redirect to dashboard (if you have one)
     } catch (err) {
       console.error(err);

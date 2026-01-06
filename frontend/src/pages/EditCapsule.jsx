@@ -25,7 +25,7 @@ const EditCapsule = () => {
           return;
         }
 
-        const res = await axios.get(`http://localhost:5000/api/capsules/${id}`, {
+        const res = await axios.get(`http://localhost:5001/api/capsules/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         
@@ -83,7 +83,7 @@ const EditCapsule = () => {
         formDataToSend.append("files", newFiles[i]);
       }
 
-      await axios.put(`http://localhost:5000/api/capsules/${id}`, formDataToSend, {
+      await axios.put(`http://localhost:5001/api/capsules/${id}`, formDataToSend, {
         headers: { 
           Authorization: `Bearer ${token}`,
           // Axios automatically sets Content-Type for FormData
@@ -149,7 +149,7 @@ const EditCapsule = () => {
                 const isVideo = file.match(/\.(mp4|mov|avi)$/i);
                 const isAudio = file.match(/\.(mp3|wav)$/i);
                 const isPdf = file.match(/\.pdf$/i);
-                const fileUrl = `http://localhost:5000/${file}`;
+                const fileUrl = `http://localhost:5001/${file}`;
 
                 return (
                   <div key={index} style={{ position: 'relative', width: '150px', height: '150px', border: '1px solid #ccc', background: '#f9f9f9' }}>
