@@ -34,21 +34,37 @@ app.use('/api/capsules', capsuleRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/badges', badgeRoutes);
 
-
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("MongoDB connecteeeeeeed!!!");
-    
-   
-    startNotificationService();
-    
-    // Start server only after DB connects
-    app.listen(process.env.PORT, () => {
-      console.log(`Server running on port ${process.env.PORT} !!!!!`);
-    });
-  })
-  .catch((err) => {
-    console.log("xxxx MongoDB connection errooooor xxx:", err.message);
+// Error handling middleware
+app.use((err, req, res, next) => {
+  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  res.status(statusCode);
+  res.json({
+    message: err.message,
+    stack: process.env.NODE_ENV === 'production' ? null : err.stack,
   });
+});
+
+
+// Only start server if not in test mode
+if (process.env.NODE_ENV !== 'test') {
+  mongoose
+    .connect(process.env.MONGO_URI)
+    .then(() => {
+      console.log("MongoDB connecteeeeeeed!!!");
+      
+     
+      startNotificationService();
+      
+      // Start server only after DB connects
+      app.listen(process.env.PORT, () => {
+        console.log(`Server running on port ${process.env.PORT} !!!!!`);
+      });
+    })
+    .catch((err) => {
+      console.log("xxxx MongoDB connection errooooor xxx:", err.message);
+    });
+}
+
+// Export app for testing
+export default app;
 
