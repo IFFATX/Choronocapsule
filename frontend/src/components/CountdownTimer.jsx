@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
-export default function CountdownTimer({ releaseDate }) {
+export default function CountdownTimer({ releaseDate, onComplete }) {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -8,6 +8,8 @@ export default function CountdownTimer({ releaseDate }) {
     seconds: 0,
     isReleased: false,
   });
+  
+  const onCompleteCalled = useRef(false);
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -23,7 +25,12 @@ export default function CountdownTimer({ releaseDate }) {
           seconds: 0,
           isReleased: true,
         });
+        if (onComplete && !onCompleteCalled.current) {
+             onCompleteCalled.current = true;
+             onComplete();
+        }
       } else {
+        onCompleteCalled.current = false; // Reset if date is pushed to future
         setTimeLeft({
           days: Math.floor(difference / (1000 * 60 * 60 * 24)),
           hours: Math.floor((difference / (1000 * 60 * 60)) % 24),

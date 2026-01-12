@@ -6,7 +6,7 @@ import { BADGES, checkBadges } from '../config/badges.js';
 
 
 const createCapsule = asyncHandler(async (req, res) => {
-  const { title, description, releaseDate } = req.body;
+  const { title, description, releaseDate, status } = req.body;
 
   if (!title || !description || !releaseDate) {
     res.status(400);
@@ -22,7 +22,7 @@ const createCapsule = asyncHandler(async (req, res) => {
     title,
     description,
     releaseDate,
-    status: 'draft',
+    status: status || 'draft',
     files,
     owner: req.user.id,
   });
@@ -111,6 +111,35 @@ const createCapsule = asyncHandler(async (req, res) => {
 
 const getCapsules = asyncHandler(async (req, res) => {
   const capsules = await Capsule.find({ owner: req.user.id });
+
+  // Check and update status for locked capsules that have passed their release date
+  const now = new Date();
+  const updatePromises = capsules.map(async (capsule) => {
+    if (capsule.status === 'locked' && new Date(capsule.releaseDate) <= now) {
+      capsule.status = 'released';
+      await capsule.save();
+
+      // Create notification if it doesn't exist
+      const existingNotification = await Notification.findOne({
+        capsule: capsule._id,
+        user: req.user.id,
+        type: 'capsule_unlocked'
+      });
+
+      if (!existingNotification) {
+        await Notification.create({
+          user: req.user.id,
+          capsule: capsule._id,
+          type: 'capsule_unlocked',
+          message: `🔓 Your capsule "${capsule.title}" has been unlocked!`,
+          isRead: false
+        });
+      }
+    }
+  });
+
+  await Promise.all(updatePromises);
+
   res.status(200).json(capsules);
 });
 
@@ -138,12 +167,35 @@ const getCapsuleById = asyncHandler(async (req, res) => {
     throw new Error('Capsule not found');
   }
 
+  // Check and update status if release date has passed
+  if (capsule.status === 'locked' && new Date(capsule.releaseDate) <= new Date()) {
+    capsule.status = 'released';
+    await capsule.save();
+
+    // Create notification if it doesn't exist
+    const existingNotification = await Notification.findOne({
+      capsule: capsule._id,
+      user: req.user.id,
+      type: 'capsule_unlocked'
+    });
+
+    if (!existingNotification) {
+      await Notification.create({
+        user: req.user.id,
+        capsule: capsule._id,
+        type: 'capsule_unlocked',
+        message: `🔓 Your capsule "${capsule.title}" has been unlocked!`,
+        isRead: false
+      });
+    }
+  }
+
   res.status(200).json(capsule);
 });
 
 const updateCapsule = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { title, description, releaseDate, remainingFiles } = req.body;
+  const { title, description, releaseDate, remainingFiles, status } = req.body;
 
   const capsule = await Capsule.findOne({ _id: id, owner: req.user.id });
 
@@ -169,6 +221,9 @@ const updateCapsule = asyncHandler(async (req, res) => {
   capsule.description = description || capsule.description;
   capsule.releaseDate = releaseDate || capsule.releaseDate;
   capsule.files = updatedFiles;
+  if (status) {
+    capsule.status = status;
+  }
 
   const updatedCapsule = await capsule.save();
 

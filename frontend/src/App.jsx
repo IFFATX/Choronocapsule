@@ -5,6 +5,7 @@ import Login from "./pages/login";
 import Dashboard from "./pages/dashboard";
 import CreateCapsule from "./pages/CreateCapsule";
 import EditCapsule from "./pages/EditCapsule";
+import ViewCapsule from "./pages/ViewCapsule";
 import './App.css';
 
 
@@ -72,6 +73,15 @@ function App() {
           element={
             <ProtectedRoute>
               <EditCapsule />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/view/:id"
+          element={
+            <ProtectedRoute>
+              <ViewCapsule />
             </ProtectedRoute>
           }
         />

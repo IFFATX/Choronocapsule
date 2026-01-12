@@ -29,6 +29,21 @@ export default function Dashboard() {
   const [editMessage, setEditMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
+  const fetchCapsules = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const config = {
+          headers: { Authorization: `Bearer ${token}` }
+      };
+      const res = await axios.get("http://localhost:5001/api/capsules", config);
+      setCapsules(res.data);
+    } catch (err) {
+      console.error("Error fetching capsules:", err);
+    }
+  };
+
   useEffect(() => {
     const stored = localStorage.getItem("user");
     const token = localStorage.getItem("token");
@@ -42,17 +57,6 @@ export default function Dashboard() {
     setUser(userData);
     setEditFormData({ name: userData.name, email: userData.email });
 
-    const fetchCapsules = async () => {
-      try {
-        const config = {
-            headers: { Authorization: `Bearer ${token}` }
-        };
-        const res = await axios.get("http://localhost:5001/api/capsules", config);
-        setCapsules(res.data);
-      } catch (err) {
-        console.error("Error fetching capsules:", err);
-      }
-    };
     fetchCapsules();
 
   }, [navigate]);
@@ -490,19 +494,29 @@ export default function Dashboard() {
                 {filteredCapsules.length > 0 ? (
                   filteredCapsules.map((capsule) => (
                     <div key={capsule._id} className="capsule-card">
-                      <div className="card-header">
-                        <span className={`status-badge ${capsule.status}`}>
-                          {capsule.status.toUpperCase()}
-                        </span>
-                        <span className="date-text">
-                           {new Date(capsule.releaseDate).toLocaleDateString()}
-                        </span>
-                      </div>
-                      <h3>{capsule.title}</h3>
-                      <p className="card-desc">
-                        {capsule.description.substring(0, 60)}...
-                      </p>
-                      <CountdownTimer releaseDate={capsule.releaseDate} />
+                      {capsule.status !== 'locked' ? (
+                        <>
+                          <div className="card-header">
+                            <span className={`status-badge ${capsule.status}`}>
+                              {capsule.status.toUpperCase()}
+                            </span>
+                            <span className="date-text">
+                               {new Date(capsule.releaseDate).toLocaleString([], { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                          </div>
+                          <h3>{capsule.title}</h3>
+                          <p className="card-desc">
+                            {capsule.description.substring(0, 60)}...
+                          </p>
+                          <CountdownTimer releaseDate={capsule.releaseDate} onComplete={fetchCapsules} />
+                        </>
+                      ) : (
+                        <>
+                          <h3>{capsule.title}</h3>
+                          <div className="lock-message" style={{ margin: '20px 0', fontSize: '1.2rem' }}>🔒 Locked</div>
+                          <CountdownTimer releaseDate={capsule.releaseDate} onComplete={fetchCapsules} />
+                        </>
+                      )}
                       
                       {capsule.status === 'draft' && (
                           <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
@@ -544,6 +558,30 @@ export default function Dashboard() {
                       )}
                       {capsule.status === 'locked' && (
                           <div className="lock-message">🔒 Locked</div>
+                      )}
+                      
+                      {capsule.status === 'released' && (
+                          <div style={{ marginTop: '10px' }}>
+                            <Link to={`/view/${capsule._id}`}>
+                              <button 
+                                className="action-btn" 
+                                style={{ 
+                                  width: '100%',
+                                  background: 'linear-gradient(135deg, #4ecdc4 0%, #2ecc71 100%)',
+                                  border: 'none',
+                                  color: 'white',
+                                  padding: '12px',
+                                  borderRadius: '12px',
+                                  fontWeight: 'bold',
+                                  fontSize: '16px',
+                                  cursor: 'pointer',
+                                  boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+                                }}
+                              >
+                                🔓 Open Capsule
+                              </button>
+                            </Link>
+                          </div>
                       )}
                     </div>
                   ))

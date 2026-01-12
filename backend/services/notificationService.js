@@ -9,7 +9,7 @@ export const checkUnlockedCapsules = async () => {
     // Find capsules that should be unlocked (release date passed and still locked)
     const capsulestoUnlock = await Capsule.find({
       releaseDate: { $lte: now },
-      status: { $in: ['draft', 'locked'] }
+      status: 'locked'
     });
     
     for (const capsule of capsulestoUnlock) {
